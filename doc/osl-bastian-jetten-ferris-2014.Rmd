@@ -1,0 +1,95 @@
+---
+title: "OSL One-way ANOVA in R Using Data from Bastian, Jetten, & Ferris (2014)"
+author: "Cory J. Cascalheira"
+date: "November 12, 2018"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/GitHub/osl-bastian-jetten-ferris-2014/src")
+```
+
+# Open Stats Lab
+___
+Kevin P. McIntyre developed this amazing resource for students of psychology. Check out [Open Stats Lab](https://sites.trinity.edu/osl/) for a collection of all activities.
+
+Each activity includes an article from *Psychological Science*, a data set, and an activity to complete in SPSS. However, if you are an open source fanatic, you could also complete the activity in [JASP](https://jasp-stats.org/). For tips on how to use JASP, check out [this resource](https://osf.io/t56kg/) created by Buchanan, Hopke, and Donaldson (2018).
+
+But I prefer to get my hands deep into the data. Dr. McIntyre does not *yet* offer an R activity to accompany the work of [Bastian, Jetten, and Ferris (2014)](https://journals.sagepub.com/stoken/default+domain/yFi5kZDGWMGBNQY62zIE/full), so here is one possible solution written in R.
+
+# Analysis 
+___
+I will perform assumption checks for each test prior to running it. We already know that the data meet all assumptions, otherwise the authors would have used a different analytic approach. However, checking the assumptions is helpful because:
+
+1. reproducibility and accuracy can be verified; and
+2. if you are a student, then you should form the habit of testing assumptions.
+
+This analysis will follow the data science workflow advocated by [Garrett Grolemund and Hadley Wickham](https://r4ds.had.co.nz/introduction.html). First, we will set-up our session and import the data. Then, we must clean the data. Next, we will transform, model, and visualize the data to understand it. Finally, we will communicate our findings.
+
+Our task is to perform four analyses.
+
+1. **Independent t-Test** - did participants differ significantly in their experience of pain intensity and pain unpleasantness?
+2. **Independent t-Test** - did participants experience significant differences in affect?
+3. **Independent t-Test** - did participants in the pain condition find their activity more threatening and challenging?
+4. **One-way ANOVA** - does pain lead to differences in group bonding?
+
+## Import
+___
+Let's load the packages necessary for this analysis into our workspace.
+
+```{r message = FALSE}
+library(tidyverse)
+library(psych)
+```
+
+We can import the data set using a relative path because our working directory is set.
+
+```{r message = FALSE}
+bastian <- read_csv("../data/Bastian Jetten and Ferris 2014 Experiment 1.csv")
+```
+
+## Clean
+___
+
+Let's find the variables of interest. After reading the paper and activity instructions, we know that we are looking for the following variables:
+
+* pain versus control condition;
+* 
+
+```{r}
+names(bastian)
+```
+
+## Understand
+___
+
+### Independent t-Test of Pain
+
+### Independent t-Test of Affect
+
+### Independent t-Test of Challenge
+
+### One-way ANOVA
+
+## Communicate
+___
+APA results section goes here.
+
+# Acknowledgements
+___
+I am thankful for my advisor, Dr. Brandt A. Smith for introducing me to R, JASP, and OSL. The discipline of psychology is advocating for preregistered, open materials. His encouragement to utilize open data and open source software has positioned me in the middle of the reproducible movement.
+
+I would still be clicking checkboxes and dropdowns to analyze data if it were not for [DataCamp](https://www.datacamp.com), [Rose Maier](https://rstudio-pubs-static.s3.amazonaws.com/65059_586f394d8eb84f84b1baaf56ffb6b47f.html), and [Alboukadel Kassambara](http://www.sthda.com/english/wiki/r-software).
+
+## Dependencies
+This activity was completed using RStudio.
+
+```{r}
+devtools::session_info()
+
+```
