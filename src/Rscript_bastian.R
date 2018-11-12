@@ -96,6 +96,7 @@ bastian_clean %>%
 
 # Homoscedasticity?
 leveneTest(task_intensity ~ condition, data = bastian_clean)
+leveneTest(task_unpleasantness ~ condition, data = bastian_clean)
 
 # Independent t-test pain
 t.test(pain$task_intensity, control$task_intensity,
@@ -108,10 +109,42 @@ t.test(pain$task_unpleasantness, control$task_unpleasantness,
 ### Independent t-Test of Affect ###
 
 # Outliers?
+bastian_clean %>% 
+  select(condition, pos_affect, neg_affect) %>%
+  gather(valence, rating, -condition) %>%
+  ggplot(aes(x = condition, y = rating)) +
+  geom_boxplot() +
+  facet_wrap(~ valence)
 
 # Normality?
 
+# Normality check for neg_affect
+with(bastian_clean, shapiro.test(neg_affect[condition == "Control"]))
+with(bastian_clean, shapiro.test(neg_affect[condition == "Pain"]))
+
+# Normality check for pos_affect
+with(bastian_clean, shapiro.test(pos_affect[condition == "Control"]))
+with(bastian_clean, shapiro.test(pos_affect[condition == "Pain"]))
+
+# Visualize normality
+bastian_clean %>% 
+  select(condition, pos_affect, neg_affect) %>%
+  gather(valence, rating, -condition) %>%
+  ggplot(aes(x = rating)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(~ valence + condition)
+
 # Homoscedasticity?
+leveneTest(neg_affect ~ condition, data = bastian_clean)
+leveneTest(pos_affect ~ condition, data = bastian_clean)
+
+# Independent t-test neg_affect
+t.test(pain$neg_affect, control$neg_affect, 
+       paired = FALSE, var.equal = TRUE)
+
+# Independent t-test pos_affect
+t.test(pain$pos_affect, control$pos_affect, 
+       paired = FALSE, var.equal = TRUE)
 
 ### Independent t-Test of Challenge ###
 
@@ -128,3 +161,5 @@ t.test(pain$task_unpleasantness, control$task_unpleasantness,
 # Normality?
 
 # Homoscedasticity?
+
+####### VISUALIZE DATA #######

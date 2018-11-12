@@ -266,22 +266,80 @@ Are the variances homogenous?
 leveneTest(task_intensity ~ condition, data = bastian_clean)
 ```
 
-Since *p* < .05, we reject the null hypothesis. The variances between the two groups are heteroscedastic.
+Since *p* < .05, we reject the null hypothesis. The variances of intensity scores between the two groups are heteroscedastic.
+
+```{r}
+leveneTest(task_unpleasantness ~ condition, data = bastian_clean)
+```
+
+In terms of task unpleasantness, the variances between both groups are not equal.
 
 So, why do we run the independent t-test anyways? Well, the [independent t-test is robust](http://oak.ucc.nau.edu/rh232/courses/EPS525/Handouts/Understanding%20the%20Independent%20t%20Test.pdf), which means that violations of normality and homoscedasticity do not necessarily entail the use of a non-parametric test. 
 
 Here, the sample sizes are equal and just shy of the recommended threshold of *n* = 30. This is why we set `var.equal = TRUE` in the call to `t.test()`. Equal sample sizes of `r nrow(control)` make these violations negligible.
 
 ### Independent t-Test of Affect {.tabset .tabset-pills}
+```{r}
+# Independent t-test neg_affect
+t.test(pain$neg_affect, control$neg_affect, 
+       paired = FALSE, var.equal = TRUE)
+
+# Independent t-test pos_affect
+t.test(pain$pos_affect, control$pos_affect, 
+       paired = FALSE, var.equal = TRUE)
+```
+
+Groups neither differed between negative affect (pain: *M* = 1.34, *SD* = 0.45; control: *M* = 1.27, *SD* = 0.37, *t*(52) = 0.6, *p* = .554), nor positive affect (pain: *M* = 3.05, *SD* = 0.82; control: *M* = 2.80, *SD* = 0.83, *t*(52) = 1.09, *p* = .283). 
 
 #### Significant outliers?
-Content.
+```{r}
+bastian_clean %>% 
+  select(condition, pos_affect, neg_affect) %>%
+  gather(valence, rating, -condition) %>%
+  ggplot(aes(x = condition, y = rating)) +
+  geom_boxplot() +
+  facet_wrap(~ valence)
+```
+
+Some outliers in both groups for negative affect.
 
 #### Normality?
-Content.
+
+**Normality Check for Negative Affect**
+```{r}
+with(bastian_clean, shapiro.test(neg_affect[condition == "Control"]))
+with(bastian_clean, shapiro.test(neg_affect[condition == "Pain"]))
+```
+
+The scores of negative affect violate the assumption of normality (*p*s < .001).
+
+**Normality Check for Positive Affect**
+```{r}
+with(bastian_clean, shapiro.test(pos_affect[condition == "Control"]))
+with(bastian_clean, shapiro.test(pos_affect[condition == "Pain"]))
+```
+
+However, for both the control (*p* = .774) and pain (*p* = .288) groups, reported values of positive affect are normally distributed.
+
+```{r}
+# Visualize normality
+bastian_clean %>% 
+  select(condition, pos_affect, neg_affect) %>%
+  gather(valence, rating, -condition) %>%
+  ggplot(aes(x = rating)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(~ valence + condition)
+```
+
+Between-group distributions for affect look similar.
 
 #### Homoscedasticity?
-Content.
+```{r}
+leveneTest(neg_affect ~ condition, data = bastian_clean)
+leveneTest(pos_affect ~ condition, data = bastian_clean)
+```
+
+Levene's test revealed that the variances for both groups were homogenous on measures of negative (*p* = .659) and positive (*p* = .789) affect.
 
 ### Independent t-Test of Challenge {.tabset .tabset-pills}
 
@@ -312,7 +370,7 @@ First, construct a `ggplot2` theme consistent with APA-style.
 
 ## Communicate
 ___
-Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001. Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001.
+Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001. Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001. Groups neither differed between negative affect (pain: *M* = 1.34, *SD* = 0.45; control: *M* = 1.27, *SD* = 0.37, *t*(52) = 0.6, *p* = .554), nor positive affect (pain: *M* = 3.05, *SD* = 0.82; control: *M* = 2.80, *SD* = 0.83, *t*(52) = 1.09, *p* = .283).
 
 # Acknowledgements
 ___
