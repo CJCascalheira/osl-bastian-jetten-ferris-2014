@@ -232,7 +232,7 @@ div.tocify {
 <hr />
 <p>Kevin P. McIntyre developed this amazing resource for students of psychology. Check out <a href="https://sites.trinity.edu/osl/">Open Stats Lab</a> for a collection of all activities.</p>
 <p>Each activity includes an article from <em>Psychological Science</em>, a data set, and an activity to complete in SPSS. However, if you are an open source fanatic, you could also complete the activity in <a href="https://jasp-stats.org/">JASP</a>. For tips on how to use JASP, check out <a href="https://osf.io/t56kg/">this resource</a> created by Buchanan, Hopke, and Donaldson (2018).</p>
-<p>But I prefer to get my hands deep into the data. Dr. McIntyre does not <em>yet</em> offer an R activity to accompany the work of <a href="https://journals.sagepub.com/stoken/default+domain/yFi5kZDGWMGBNQY62zIE/full">Bastian, Jetten, and Ferris (2014)</a>, so here is one possible solution written in R.</p>
+<p>I prefer to get my hands deep into the data. Dr. McIntyre does not <em>yet</em> offer an R activity to accompany the work of <a href="https://journals.sagepub.com/stoken/default+domain/yFi5kZDGWMGBNQY62zIE/full">Bastian, Jetten, and Ferris (2014)</a>, so here is one possible solution written in R.</p>
 </div>
 <div id="analysis" class="section level1">
 <h1><span class="header-section-number">2</span> Analysis</h1>
@@ -262,12 +262,16 @@ library(psych)</code></pre>
 <div id="clean" class="section level2">
 <h2><span class="header-section-number">2.2</span> Clean</h2>
 <hr />
-<p>Let’s find the variables of interest. After reading the paper and activity instructions, we know that we are looking for the following variables:</p>
+<p>Let’s find the variables of interest. After reading the <a href="https://sites.trinity.edu/osl/data-sets-and-activities/one-way-anova-activities">paper and activity instructions</a>, we know that we are looking for the following variables:</p>
 <ul>
 <li>pain versus control condition;</li>
-<li></li>
+<li>pain intensity and pain unpleasantness;</li>
+<li>positive and negative affect;</li>
+<li>threatening and challenging; and</li>
+<li>group bonding.</li>
 </ul>
-<pre class="r"><code>names(bastian)</code></pre>
+<pre class="r"><code># Find variables of interest
+names(bastian)</code></pre>
 <pre><code>##  [1] &quot;subid&quot;               &quot;CONDITION&quot;           &quot;groupnumber&quot;        
 ##  [4] &quot;groupsize&quot;           &quot;subnumber&quot;           &quot;subage&quot;             
 ##  [7] &quot;subgender&quot;           &quot;gendercoded&quot;         &quot;subbornaus&quot;         
@@ -289,17 +293,67 @@ library(psych)</code></pre>
 ## [55] &quot;group105&quot;            &quot;group106&quot;            &quot;group107&quot;           
 ## [58] &quot;task_intensity&quot;      &quot;task_unpleasantness&quot; &quot;Threat_MEAN&quot;        
 ## [61] &quot;Challenge_MEAN&quot;      &quot;Pos_PANAS&quot;           &quot;Neg_PANAS&quot;</code></pre>
+<p>We learned from the article that PANAS is a measure of affect. Let’s clean up these data by assigning new variable names. I like to follow <code>this_convention</code> when naming objects in R. This prevents me from constantly referring to the <code>names()</code> of the data frame to check punctuation, capitalization, etc.</p>
+<pre class="r"><code># Select &amp; rename variables of interest
+bastian_clean &lt;- bastian %&gt;%
+  select(
+    condition = CONDITION,
+    group101:task_unpleasantness,
+    threat_mean = Threat_MEAN,
+    challenge_mean = Challenge_MEAN,
+    pos_affect = Pos_PANAS,
+    neg_affect = Neg_PANAS
+  )</code></pre>
+<p>We will need to compute the group bonding variable. Let’s do that ahead of time.</p>
 </div>
 <div id="understand" class="section level2">
 <h2><span class="header-section-number">2.3</span> Understand</h2>
 <hr />
-<div id="independent-t-test-of-pain" class="section level3">
+<p>An <a href="https://libguides.library.kent.edu/SPSS/IndependentTTest">unpaired samples t-test</a> shares assumptions with a <a href="https://libguides.library.kent.edu/SPSS/OneWayANOVA">univariate ANOVA</a>. Three of these assumptions derive from experimental design, while the remaining three can be tested after data collection.</p>
+<p>Remember, all samples in psychology should be randomly selected from the population.</p>
+<p><strong>Experimental Design Assumptions</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>Dependent, response variable that is a continuous <code>numeric</code>.</p></li>
+<li>Independent, explanatory variable that is a categorical <code>factor</code>.
+<ul>
+<li>Unpaired sampled t-test compares the means of two groups (i.e., two levels of a factor).</li>
+<li>One-way ANOVA compares the means of two or more groups (i.e., multiple levels of a factor).</li>
+</ul></li>
+<li>Independence of observations.
+<ul>
+<li>Participants are assigned to one group with no overlap.</li>
+</ul></li>
+</ol>
+<p>All of the experimental design assumptions have been met.</p>
+<p><strong>Data Collection Assumptions</strong></p>
+<ol start="4" style="list-style-type: decimal">
+<li>No significant outliers.
+<ul>
+<li>Tested with boxplots and by comparing discrepancies between mean and median.</li>
+<li>ANOVA is a robust test. If all levels of the factor are skewed in the same direction, then the results from our ANOVA are still reliable.</li>
+</ul></li>
+<li>The data are normally distributed.
+<ul>
+<li>Tested with a Shapiro-Wilk test.</li>
+<li>Visualized with histograms and density curves.</li>
+</ul></li>
+<li><p>The data are homoscedastic.</p>
+<ul>
+<li>Primarily tested with Levene’s test.</li>
+<li>Occasionally tested with Bartlett’s test, which is more sensitive to violations of normality.</li>
+</ul></li>
+</ol>
+<p>Remember, the hypotheses of an independent t-test are:</p>
+<p><span class="math display">\[ H_0: \mu_1 = \mu_2 \\ H_1: \mu_1 \neq \mu_2 \]</span></p>
+<p>The hypotheses of a one-way ANOVA are:</p>
+<p><span class="math display">\[ H_0: \mu_1 = \mu_2 = \mu_3 = \dotso = \mu_k \\ H_1: \text{at least one different} \]</span></p>
+<div id="independent-t-test-of-pain" class="section level3 tabset">
 <h3><span class="header-section-number">2.3.1</span> Independent t-Test of Pain</h3>
 </div>
-<div id="independent-t-test-of-affect" class="section level3">
+<div id="independent-t-test-of-affect" class="section level3 tabset">
 <h3><span class="header-section-number">2.3.2</span> Independent t-Test of Affect</h3>
 </div>
-<div id="independent-t-test-of-challenge" class="section level3">
+<div id="independent-t-test-of-challenge" class="section level3 tabset">
 <h3><span class="header-section-number">2.3.3</span> Independent t-Test of Challenge</h3>
 </div>
 <div id="one-way-anova" class="section level3">

@@ -20,7 +20,7 @@ Kevin P. McIntyre developed this amazing resource for students of psychology. Ch
 
 Each activity includes an article from *Psychological Science*, a data set, and an activity to complete in SPSS. However, if you are an open source fanatic, you could also complete the activity in [JASP](https://jasp-stats.org/). For tips on how to use JASP, check out [this resource](https://osf.io/t56kg/) created by Buchanan, Hopke, and Donaldson (2018).
 
-But I prefer to get my hands deep into the data. Dr. McIntyre does not *yet* offer an R activity to accompany the work of [Bastian, Jetten, and Ferris (2014)](https://journals.sagepub.com/stoken/default+domain/yFi5kZDGWMGBNQY62zIE/full), so here is one possible solution written in R.
+I prefer to get my hands deep into the data. Dr. McIntyre does not *yet* offer an R activity to accompany the work of [Bastian, Jetten, and Ferris (2014)](https://journals.sagepub.com/stoken/default+domain/yFi5kZDGWMGBNQY62zIE/full), so here is one possible solution written in R.
 
 # Analysis 
 ___
@@ -56,23 +56,82 @@ bastian <- read_csv("../data/Bastian Jetten and Ferris 2014 Experiment 1.csv")
 ## Clean
 ___
 
-Let's find the variables of interest. After reading the paper and activity instructions, we know that we are looking for the following variables:
+Let's find the variables of interest. After reading the [paper and activity instructions](https://sites.trinity.edu/osl/data-sets-and-activities/one-way-anova-activities), we know that we are looking for the following variables:
 
 * pain versus control condition;
-* 
+* pain intensity and pain unpleasantness;
+* positive and negative affect;
+* threatening and challenging; and
+* group bonding.
 
 ```{r}
+# Find variables of interest
 names(bastian)
 ```
 
+We learned from the article that PANAS is a measure of affect. Let's clean up these data by assigning new variable names. I like to follow `this_convention` when naming objects in R. This prevents me from constantly referring to the `names()` of the data frame to check punctuation, capitalization, etc.
+
+```{r}
+# Select & rename variables of interest
+bastian_clean <- bastian %>%
+  select(
+    condition = CONDITION,
+    group101:task_unpleasantness,
+    threat_mean = Threat_MEAN,
+    challenge_mean = Challenge_MEAN,
+    pos_affect = Pos_PANAS,
+    neg_affect = Neg_PANAS
+  )
+```
+
+We will need to compute the group bonding variable. Let's do that ahead of time.
+
 ## Understand
 ___
+An [unpaired samples t-test](https://libguides.library.kent.edu/SPSS/IndependentTTest) shares assumptions with a [univariate ANOVA](https://libguides.library.kent.edu/SPSS/OneWayANOVA). Three of these assumptions derive from experimental design, while the remaining three can be tested after data collection. 
 
-### Independent t-Test of Pain
+Remember, all samples in psychology should be randomly selected from the population. 
 
-### Independent t-Test of Affect
+**Experimental Design Assumptions**
 
-### Independent t-Test of Challenge
+1. Dependent, response variable that is a continuous `numeric`.
+
+2. Independent, explanatory variable that is a categorical `factor`.
+    - Unpaired sampled t-test compares the means of two groups (i.e., two levels of a factor).
+    - One-way ANOVA compares the means of two or more groups (i.e., multiple levels of a factor).
+
+3. Independence of observations.
+    - Participants are assigned to one group with no overlap.
+
+All of the experimental design assumptions have been met.
+
+**Data Collection Assumptions**
+
+4. No significant outliers.
+    - Tested with boxplots and by comparing discrepancies between mean and median.
+    - ANOVA is a robust test. If all levels of the factor are skewed in the same direction, then the results from our ANOVA are still reliable.
+
+5. The data are normally distributed.
+    - Tested with a Shapiro-Wilk test.
+    - Visualized with histograms and density curves.
+
+6. The data are homoscedastic.
+    - Primarily tested with Levene's test.
+    - Occasionally tested with Bartlett's test, which is more sensitive to violations of normality.
+
+Remember, the hypotheses of an independent t-test are:
+
+$$ H_0: \mu_1 = \mu_2 \\ H_1: \mu_1 \neq \mu_2 $$
+
+The hypotheses of a one-way ANOVA are:
+
+$$ H_0: \mu_1 = \mu_2 = \mu_3 = \dotso = \mu_k \\ H_1: \text{at least one different} $$
+
+### Independent t-Test of Pain {.tabset}
+
+### Independent t-Test of Affect {.tabset}
+
+### Independent t-Test of Challenge {.tabset}
 
 ### One-way ANOVA
 
