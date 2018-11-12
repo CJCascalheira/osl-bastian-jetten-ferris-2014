@@ -6,7 +6,6 @@ output:
   html_document:
     toc: true
     toc_float: true
-    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -45,6 +44,7 @@ Let's load the packages necessary for this analysis into our workspace.
 ```{r message = FALSE}
 library(tidyverse)
 library(psych)
+library(car)
 ```
 
 We can import the data set using a relative path because our working directory is set.
@@ -84,7 +84,45 @@ bastian_clean <- bastian %>%
   )
 ```
 
+A one-way ANOVA is performed on a factor with two or more levels. Right now, the `condition` column is an `integer`.
+
+```{r}
+# Change condition to factor with two levels
+bastian_clean$condition <- factor(bastian_clean$condition,
+                                  levels = c("Control", "Pain"),
+                                  labels = c("Control", "Pain"))
+
+# Ensure factor assignment worked
+class(bastian_clean$condition)
+```
+
+Independent, unpaired samples t-tests are simpler to execute in R if we separate the groups into variables.
+
+```{r}
+# Separate the conditions for t-tests
+control <- bastian_clean %>%
+  filter(condition == "Control")
+
+pain <- bastian_clean %>%
+  filter(condition == "Pain")
+```
+
 We will need to compute the group bonding variable. Let's do that ahead of time.
+
+```{r}
+# Create bonding variable
+bonding_mean <- bastian_clean %>%
+  select(group101:group107) %>%
+  rowMeans()
+
+bastian_clean <- bastian_clean %>%
+  mutate(bonding_mean = bonding_mean)
+
+# Verify new variable
+head(bastian_clean$bonding_mean)
+```
+
+Data are ready for analysis!
 
 ## Understand
 ___
@@ -127,13 +165,22 @@ The hypotheses of a one-way ANOVA are:
 
 $$ H_0: \mu_1 = \mu_2 = \mu_3 = \dotso = \mu_k \\ H_1: \text{at least one different} $$
 
-### Independent t-Test of Pain {.tabset}
+### Independent t-Test of Pain {.tabset .tabset-pills}
 
-### Independent t-Test of Affect {.tabset}
+#### Significant outliers?
+Content.
 
-### Independent t-Test of Challenge {.tabset}
+#### Normality?
+Content.
 
-### One-way ANOVA
+#### Homoscedasticity?
+Content.
+
+### Independent t-Test of Affect {.tabset .tabset-pills}
+
+### Independent t-Test of Challenge {.tabset .tabset-pills}
+
+### One-way ANOVA {.tabset .tabset-pills}
 
 ## Communicate
 ___
