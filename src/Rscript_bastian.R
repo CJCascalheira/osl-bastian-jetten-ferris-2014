@@ -29,18 +29,10 @@ bastian_clean <- bastian %>%
 
 # Change condition to factor with two levels
 bastian_clean$condition <- factor(bastian_clean$condition,
-                                  levels = c("Control", "Pain"),
                                   labels = c("Control", "Pain"))
 
 # Ensure factor assignment worked
 class(bastian_clean$condition)
-
-# Separate the conditions for t-tests
-control <- bastian_clean %>%
-  filter(condition == "Control")
-
-pain <- bastian_clean %>%
-  filter(condition == "Pain")
 
 # Create bonding variable
 bonding_mean <- bastian_clean %>%
@@ -51,17 +43,67 @@ bastian_clean <- bastian_clean %>%
   mutate(bonding_mean = bonding_mean)
 
 # Verify new variable
-names(bastian_clean)
+head(bastian_clean$bonding_mean)
+
+# Separate the conditions for t-tests
+control <- bastian_clean %>%
+  filter(condition == "Control")
+
+pain <- bastian_clean %>%
+  filter(condition == "Pain")
 
 ####### ANALYZE #######
+
+# Descriptive statistics for control group
+(control_desc <- control %>%
+  select(-starts_with("group"), -condition) %>%
+  describe() %>%
+  select(mean, sd, se))
+
+# Descriptive statistics for pain group
+(pain_desc <- pain %>%
+  select(-starts_with("group"), -condition) %>%
+  describe() %>%
+  select(mean, sd, se))
 
 ### Independent t-Test of Pain ###
 
 # Outliers?
+bastian_clean %>% 
+  select(condition, task_intensity, task_unpleasantness) %>%
+  gather(task, pain, -condition) %>%
+  ggplot(aes(x = condition, y = pain)) +
+    geom_boxplot() +
+    facet_wrap(~ task)
 
 # Normality?
 
+# Normality check for task_intensity
+with(bastian_clean, shapiro.test(task_intensity[condition == "Control"]))
+with(bastian_clean, shapiro.test(task_intensity[condition == "Pain"]))
+
+# Normality check for task_unpleasantness
+with(bastian_clean, shapiro.test(task_unpleasantness[condition == "Control"]))
+with(bastian_clean, shapiro.test(task_unpleasantness[condition == "Pain"]))
+
+# Visualize normality
+bastian_clean %>% 
+  select(condition, task_intensity, task_unpleasantness) %>%
+  gather(task, pain, -condition) %>%
+  ggplot(aes(x = pain)) +
+  geom_histogram(bins = 10) +
+  facet_grid(~ task + condition)
+
 # Homoscedasticity?
+leveneTest(task_intensity ~ condition, data = bastian_clean)
+
+# Independent t-test pain
+t.test(pain$task_intensity, control$task_intensity,
+       paired = FALSE, var.equal = TRUE)
+
+# Independent t-test unpleasantness
+t.test(pain$task_unpleasantness, control$task_unpleasantness,
+       paired = FALSE, var.equal = TRUE)
 
 ### Independent t-Test of Affect ###
 

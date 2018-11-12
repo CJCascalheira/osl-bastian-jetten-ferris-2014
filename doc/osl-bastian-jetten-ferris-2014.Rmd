@@ -89,22 +89,10 @@ A one-way ANOVA is performed on a factor with two or more levels. Right now, the
 ```{r}
 # Change condition to factor with two levels
 bastian_clean$condition <- factor(bastian_clean$condition,
-                                  levels = c("Control", "Pain"),
                                   labels = c("Control", "Pain"))
 
 # Ensure factor assignment worked
 class(bastian_clean$condition)
-```
-
-Independent, unpaired samples t-tests are simpler to execute in R if we separate the groups into variables.
-
-```{r}
-# Separate the conditions for t-tests
-control <- bastian_clean %>%
-  filter(condition == "Control")
-
-pain <- bastian_clean %>%
-  filter(condition == "Pain")
 ```
 
 We will need to compute the group bonding variable. Let's do that ahead of time.
@@ -120,6 +108,18 @@ bastian_clean <- bastian_clean %>%
 
 # Verify new variable
 head(bastian_clean$bonding_mean)
+```
+
+
+Independent, unpaired samples t-tests are simpler to execute in R if we separate the groups into variables.
+
+```{r}
+# Separate the conditions for t-tests
+control <- bastian_clean %>%
+  filter(condition == "Control")
+
+pain <- bastian_clean %>%
+  filter(condition == "Pain")
 ```
 
 Data are ready for analysis!
@@ -165,7 +165,114 @@ The hypotheses of a one-way ANOVA are:
 
 $$ H_0: \mu_1 = \mu_2 = \mu_3 = \dotso = \mu_k \\ H_1: \text{at least one different} $$
 
+**Note**: Even if you perform the test in question first (as I do below), make sure to check the assumptions.
+
+### Descriptive Statistics
+Let's summarize the data with pipes and a call to `psych::describe`.
+
+Save the information as variables to use for graphing later.
+
+```{r}
+# Descriptive statistics for control group
+(control_desc <- control %>%
+  select(-starts_with("group"), -condition) %>%
+  describe() %>%
+  select(mean, sd, se))
+```
+
+```{r}
+# Descriptive statistics for pain group
+(pain_desc <- pain %>%
+  select(-starts_with("group"), -condition) %>%
+  describe() %>%
+  select(mean, sd, se))
+```
+
 ### Independent t-Test of Pain {.tabset .tabset-pills}
+
+```{r}
+# Independent t-test pain
+t.test(pain$task_intensity, control$task_intensity,
+       paired = FALSE, var.equal = TRUE)
+```
+
+Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001.
+
+```{r}
+# Independent t-test unpleasantness
+t.test(pain$task_unpleasantness, control$task_unpleasantness,
+       paired = FALSE, var.equal = TRUE)
+```
+
+Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001.
+
+#### Significant outliers?
+Outliers skew distributions.
+```{r}
+bastian_clean %>% 
+  select(condition, task_intensity, task_unpleasantness) %>%
+  gather(task, pain, -condition) %>%
+  ggplot(aes(x = condition, y = pain)) +
+    geom_boxplot() +
+    facet_wrap(~ task)
+```
+
+Yes, there are outliers in the control group. Normality may be affected.
+
+#### Normality?
+The Shapiro-Wilk test enables us to examine if the data are normally distrbuted.
+
+**Normality Check for Task Intensity**
+```{r}
+with(bastian_clean, shapiro.test(task_intensity[condition == "Control"]))
+```
+
+Since *p* < .001, we reject the null hypothesis that the distribution of task intensity is normal for the control group.
+
+```{r}
+with(bastian_clean, shapiro.test(task_intensity[condition == "Pain"]))
+```
+
+The observations of the variable task intensity are normally distrbuted for the pain group (*p* = .321).
+
+**Normality Check for Task Unpleasantness**
+```{r}
+with(bastian_clean, shapiro.test(task_unpleasantness[condition == "Control"]))
+```
+
+Once again, *p* < .001, so we accept the alternative hypothesis; this distribution is not normal.
+
+```{r}
+with(bastian_clean, shapiro.test(task_unpleasantness[condition == "Pain"]))
+```
+
+However, for the pain group, the distrbution of task unpleasantness *is* normal (*p* < .171).
+
+We can visualize normality with histograms.
+```{r}
+bastian_clean %>% 
+  select(condition, task_intensity, task_unpleasantness) %>%
+  gather(task, pain, -condition) %>%
+  ggplot(aes(x = pain)) +
+  geom_histogram(bins = 10) +
+  facet_grid(~ task + condition)
+```
+
+Participants in the control group (i.e., those *not* subjected to ice water and squats) reported little pain and unpleasantness, hence the concentration of scores near 0.
+
+#### Homoscedasticity?
+Are the variances homogenous?
+```{r}
+leveneTest(task_intensity ~ condition, data = bastian_clean)
+```
+
+Since *p* < .05, we reject the null hypothesis. The variances between the two groups are heteroscedastic.
+
+So, why do we run the independent t-test anyways? Well, the [independent t-test is robust](http://oak.ucc.nau.edu/rh232/courses/EPS525/Handouts/Understanding%20the%20Independent%20t%20Test.pdf), which means that violations of normality and homoscedasticity do not necessarily entail the use of a non-parametric test. 
+
+Here, the sample sizes are equal and just shy of the recommended threshold of *n* = 30. This is why we set `var.equal = TRUE` in the call to `t.test()`. Equal sample sizes of `r nrow(control)` make these violations negligible.
+
+### Independent t-Test of Affect {.tabset .tabset-pills}
 
 #### Significant outliers?
 Content.
@@ -176,15 +283,36 @@ Content.
 #### Homoscedasticity?
 Content.
 
-### Independent t-Test of Affect {.tabset .tabset-pills}
-
 ### Independent t-Test of Challenge {.tabset .tabset-pills}
+
+#### Significant outliers?
+Content.
+
+#### Normality?
+Content.
+
+#### Homoscedasticity?
+Content.
 
 ### One-way ANOVA {.tabset .tabset-pills}
 
+#### Significant outliers?
+Content.
+
+#### Normality?
+Content.
+
+#### Homoscedasticity?
+Content.
+
+### Visualize
+Now we can create a bar graph depicting the degree of error.
+
+First, construct a `ggplot2` theme consistent with APA-style.
+
 ## Communicate
 ___
-APA results section goes here.
+Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001. Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001.
 
 # Acknowledgements
 ___
@@ -197,5 +325,4 @@ This activity was completed using RStudio.
 
 ```{r}
 devtools::session_info()
-
 ```
