@@ -224,3 +224,34 @@ apa_theme <- theme_bw() +
         axis.line = element_line(),
         plot.title = element_text(hjust = 0.5),
         text = element_text(size = 12, family = "Times New Roman"))
+
+# Select variables of interest
+(control_dynamite <- control_desc %>%
+  mutate(measure = row.names(control_desc)) %>%
+  select(measure, mean, se) %>%
+  filter(measure == "bonding_mean") %>%
+  mutate(condition = "Control"))
+
+(pain_dynamite <- pain_desc %>%
+    mutate(measure = row.names(pain_desc)) %>%
+    select(measure, mean, se) %>%
+    filter(measure == "bonding_mean") %>%
+    mutate(condition = "Pain"))
+
+# Merge variables holding mean and standard error
+(dynamite_plot <- merge(pain_dynamite, control_dynamite,
+                       by = c("measure", "condition", "mean", "se"), all = TRUE))
+
+# Visualize pain's affect on social bonding
+ggplot(dynamite_plot, aes(x = condition, y = mean, fill = condition)) +
+  geom_bar(position = "dodge", stat = "identity", color = "black", size = 0.5) +
+  geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
+                width = 0.1, position = position_dodge(0.9)) +
+  scale_fill_manual(values = c("Control" = "#FFFFFF", "Pain" = "#999999"),
+                    labels = c("Control", "Pain")) +
+  labs(x = "", y = "Mean Level of Social Bonding") +
+  
+  expand_limits(y = c(1, 5)) +
+  scale_y_continuous(breaks = 0:5) +
+  apa_theme +
+  theme(legend.position = "none")

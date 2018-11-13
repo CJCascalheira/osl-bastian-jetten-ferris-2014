@@ -457,6 +457,7 @@ The *F* value does not exceed the critical value, so we accept the null hypothes
 Now we can create a bar graph depicting the degree of error.
 
 First, construct a `ggplot2` theme consistent with APA-style.
+
 ```{r}
 apa_theme <- theme_bw() +
   theme(panel.grid.major = element_blank(),
@@ -464,22 +465,58 @@ apa_theme <- theme_bw() +
         panel.border = element_blank(),
         axis.line = element_line(),
         plot.title = element_text(hjust = 0.5),
-        text = element_text(size = 12, family = "Times New Roman"))
+        text = element_text(size = 12))
 ```
 
-This code creates the bar graph. We display it below.
-```{r dynamite, results = 'hide'}
+Remember those R objects holding our descriptive statistics?
+
+Only the summary statistics for `bonding_mean` are necessary. After selecting those, we will assign the condition as a new variable.
+
+```{r}
+control_dynamite <- control_desc %>%
+  mutate(measure = row.names(control_desc)) %>%
+  select(measure, mean, se) %>%
+  filter(measure == "bonding_mean") %>%
+  mutate(condition = "Control")
+
+pain_dynamite <- pain_desc %>%
+    mutate(measure = row.names(pain_desc)) %>%
+    select(measure, mean, se) %>%
+    filter(measure == "bonding_mean") %>%
+    mutate(condition = "Pain")
 ```
+
+Finally, we will merge the data frames. The creation of a single data frame with the mean and standard error for both conditions makes plotting simple.
+
+```{r}
+(dynamite_plot <- merge(pain_dynamite, control_dynamite,
+                       by = c("measure", "condition", "mean", "se"), all = TRUE))
+```
+
+This code creates the bar graph.
+
+```{r message = FALSE}
+ggplot(dynamite_plot, aes(x = condition, y = mean, fill = condition)) +
+  geom_bar(position = "dodge", stat = "identity", color = "black", size = 0.5) +
+  geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
+                width = 0.1, position = position_dodge(0.9)) +
+  scale_fill_manual(values = c("Control" = "#FFFFFF", "Pain" = "#999999"),
+                    labels = c("Control", "Pain")) +
+  labs(x = "", y = "Mean Level of Social Bonding") +
+  
+  expand_limits(y = c(1, 5)) +
+  scale_y_continuous(breaks = 0:5) +
+  apa_theme +
+  theme(legend.position = "none")
+```
+
+**Figure 1.** Results from Experiment 1 showing the mean level of social bonding reported for each group.
 
 ## Communicate
 ___
 Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001. Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001. Groups neither differed between negative affect (pain: *M* = 1.34, *SD* = 0.45; control: *M* = 1.27, *SD* = 0.37, *t*(52) = 0.6, *p* = .554), nor positive affect (pain: *M* = 3.05, *SD* = 0.82; control: *M* = 2.80, *SD* = 0.83, *t*(52) = 1.09, *p* = .283). The pain group perceived their tasks to be slightly more threatening (*M* = 1.36, *SD* = 0.58) than the control group (*M* = 1.11, *SD* = 0.30), *t*(52) = 1.97, *p* = .054, but not more challenging (pain: *M* = 2.67, *SD* = 0.87; control: *M* = 2.38, *SD* = 0.91, *t*(52) = 1.22, *p* = .227).
 
 Enduring pain with others has a mild effect on social bonding. Participants who perform the pain tasks with others reported a greater sense of being connected (*M* = 3.71, *SD* = 1.01) than those who perform non-painful tasks (*M* = 3.14, *SD* = 1.09), *F*(1, 52) = 4.09, *p* = .048.
-
-```{r ref.label = 'dynamite', echo = FALSE}
-```
-**Figure 1.** Results from Experiment 1 showing the mean level of social bonding reported for each group. 
 
 # Acknowledgements
 ___
