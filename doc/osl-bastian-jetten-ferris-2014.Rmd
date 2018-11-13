@@ -403,25 +403,68 @@ Data for each measure are homoscedastic (both *p*s > 0.05).
 
 ### One-way ANOVA {.tabset .tabset-pills}
 ```{r}
+# Model the variance
+bastian_aov <- aov(bonding_mean ~ condition, data = bastian_clean)
+
+# Summarize the ANOVA
+anova(bastian_aov)
 ```
+
+Since *p* = .048 is less than our significance value of $\alpha = 0.05 $, the *F* value exceeds the critical value. We reject the null hypothesis.
+
+Enduring pain with others has a mild effect on social bonding. Participants who perform the pain tasks with others reported a greater sense of being connected (*M* = 3.71, *SD* = 1.01) than those who perform non-painful tasks (*M* = 3.14, *SD* = 1.09), *F*(1, 52) = 4.09, *p* = .048.
 
 #### Significant outliers?
 ```{r}
+ggplot(bastian_clean, aes(x = condition, y = bonding_mean)) +
+  geom_boxplot()
 ```
+
+It appears only two participants felt relatively disconnected after sharing pain with strangers.
 
 #### Normality?
 ```{r}
+with(bastian_clean, shapiro.test(bonding_mean[condition == "Control"]))
+with(bastian_clean, shapiro.test(bonding_mean[condition == "Pain"]))
 ```
+
+Data from the control condition (*p* = .304) are normally distributed, but are non-normal for the pain group (*p* = .002).
+
+It is possible, and advisable, to check for normality among the residuals of an `aov` object.
+```{r}
+bastian_residuals <- residuals(object = bastian_aov)
+shapiro.test(bastian_residuals)
+```
+
+The residuals are not normally distributed. However, like the independent t-test, a one-way ANOVA is *robust*. One condition is normal, while the other is not. The violation of normality is moderate.
+
+```{r}
+ggplot(bastian_clean, aes(x = bonding_mean)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(~ condition)
+```
+
+Most participants in the pain group rated their sense of bonding above 3.
 
 #### Homoscedasticity?
 ```{r}
+leveneTest(bonding_mean ~ condition, data = bastian_clean)
 ```
+
+The *F* value does not exceed the critical value, so we accept the null hypothesis. The data are homoscedastic, *F*(1, 59) = 0.29, *p* = .593.
 
 ### Visualize
 Now we can create a bar graph depicting the degree of error.
 
 First, construct a `ggplot2` theme consistent with APA-style.
 ```{r}
+apa_theme <- theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.line = element_line(),
+        plot.title = element_text(hjust = 0.5),
+        text = element_text(size = 12, family = "Times New Roman"))
 ```
 
 This code creates the bar graph. We display it below.
@@ -432,7 +475,7 @@ This code creates the bar graph. We display it below.
 ___
 Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001. Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001. Groups neither differed between negative affect (pain: *M* = 1.34, *SD* = 0.45; control: *M* = 1.27, *SD* = 0.37, *t*(52) = 0.6, *p* = .554), nor positive affect (pain: *M* = 3.05, *SD* = 0.82; control: *M* = 2.80, *SD* = 0.83, *t*(52) = 1.09, *p* = .283). The pain group perceived their tasks to be slightly more threatening (*M* = 1.36, *SD* = 0.58) than the control group (*M* = 1.11, *SD* = 0.30), *t*(52) = 1.97, *p* = .054, but not more challenging (pain: *M* = 2.67, *SD* = 0.87; control: *M* = 2.38, *SD* = 0.91, *t*(52) = 1.22, *p* = .227).
 
-Results on.
+Enduring pain with others has a mild effect on social bonding. Participants who perform the pain tasks with others reported a greater sense of being connected (*M* = 3.71, *SD* = 1.01) than those who perform non-painful tasks (*M* = 3.14, *SD* = 1.09), *F*(1, 52) = 4.09, *p* = .048.
 
 ```{r ref.label = 'dynamite', echo = FALSE}
 ```

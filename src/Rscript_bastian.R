@@ -188,10 +188,39 @@ t.test(pain$threat_mean, control$threat_mean,
 
 ### One-way ANOVA ###
 
+# Model the variance
+bastian_aov <- aov(bonding_mean ~ condition, data = bastian_clean)
+
+# Summarize the ANOVA
+anova(bastian_aov)
+
 # Outliers?
+ggplot(bastian_clean, aes(x = condition, y = bonding_mean)) +
+  geom_boxplot()
 
 # Normality?
+with(bastian_clean, shapiro.test(bonding_mean[condition == "Control"]))
+with(bastian_clean, shapiro.test(bonding_mean[condition == "Pain"]))
+
+# Distribution of residuals
+bastian_residuals <- residuals(object = bastian_aov)
+shapiro.test(bastian_residuals)
+
+# Visualize the distribution
+ggplot(bastian_clean, aes(x = bonding_mean)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(~ condition)
 
 # Homoscedasticity?
+leveneTest(bonding_mean ~ condition, data = bastian_clean)
 
 ####### VISUALIZE DATA #######
+
+# Construct APA theme
+apa_theme <- theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.line = element_line(),
+        plot.title = element_text(hjust = 0.5),
+        text = element_text(size = 12, family = "Times New Roman"))
