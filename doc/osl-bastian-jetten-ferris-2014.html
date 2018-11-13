@@ -616,6 +616,35 @@ bastian_clean %&gt;%
 </div>
 <div id="independent-t-test-of-challenge" class="section level3 tabset tabset-pills">
 <h3>Independent t-Test of Challenge</h3>
+<pre class="r"><code># Independent t.test challenge_mean
+t.test(pain$challenge_mean, control$challenge_mean,
+       paired = FALSE, var.equal = TRUE)</code></pre>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  pain$challenge_mean and control$challenge_mean
+## t = 1.2227, df = 52, p-value = 0.227
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.1899875  0.7825800
+## sample estimates:
+## mean of x mean of y 
+##  2.672840  2.376543</code></pre>
+<pre class="r"><code># Independent t.test threat_mean
+t.test(pain$threat_mean, control$threat_mean,
+       paired = FALSE, var.equal = TRUE)</code></pre>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  pain$threat_mean and control$threat_mean
+## t = 1.969, df = 52, p-value = 0.05429
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.004720298  0.498547458
+## sample estimates:
+## mean of x mean of y 
+##  1.358025  1.111111</code></pre>
+<p>The pain group perceived their tasks to be slightly more threatening (<em>M</em> = 1.36, <em>SD</em> = 0.58) than the control group (<em>M</em> = 1.11, <em>SD</em> = 0.30), <em>t</em>(52) = 1.97, <em>p</em> = .054, but not more challenging (pain: <em>M</em> = 2.67, <em>SD</em> = 0.87; control: <em>M</em> = 2.38, <em>SD</em> = 0.91, <em>t</em>(52) = 1.22, <em>p</em> = .227).</p>
 <div id="significant-outliers-2" class="section level4">
 <h4>Significant outliers?</h4>
 <p>Content.</p>
@@ -648,12 +677,15 @@ bastian_clean %&gt;%
 <h3>Visualize</h3>
 <p>Now we can create a bar graph depicting the degree of error.</p>
 <p>First, construct a <code>ggplot2</code> theme consistent with APA-style.</p>
+<p>This code creates the bar graph. We display it below.</p>
 </div>
 </div>
 <div id="communicate" class="section level2">
 <h2>Communicate</h2>
 <hr />
-<p>Participants in the pain group (<em>M</em> = 6.07, <em>SD</em> = 2.00) rated the intensity of their pain higher than those in the control group (<em>M</em> = 1.67, <em>SD</em> = 0.92), <em>t</em>(52) = 10.41, <em>p</em> &lt; .001. Those subjected to the ice water task and squats (<em>M</em> = 6.00, <em>SD</em> = 1.96) were more likely than their counterparts (<em>M</em> = 1.74, <em>SD</em> = 1.20) to report an unpleasant experience, <em>t</em>(52) = 9.63, <em>p</em> &lt; .001. Groups neither differed between negative affect (pain: <em>M</em> = 1.34, <em>SD</em> = 0.45; control: <em>M</em> = 1.27, <em>SD</em> = 0.37, <em>t</em>(52) = 0.6, <em>p</em> = .554), nor positive affect (pain: <em>M</em> = 3.05, <em>SD</em> = 0.82; control: <em>M</em> = 2.80, <em>SD</em> = 0.83, <em>t</em>(52) = 1.09, <em>p</em> = .283).</p>
+<p>Participants in the pain group (<em>M</em> = 6.07, <em>SD</em> = 2.00) rated the intensity of their pain higher than those in the control group (<em>M</em> = 1.67, <em>SD</em> = 0.92), <em>t</em>(52) = 10.41, <em>p</em> &lt; .001. Those subjected to the ice water task and squats (<em>M</em> = 6.00, <em>SD</em> = 1.96) were more likely than their counterparts (<em>M</em> = 1.74, <em>SD</em> = 1.20) to report an unpleasant experience, <em>t</em>(52) = 9.63, <em>p</em> &lt; .001. Groups neither differed between negative affect (pain: <em>M</em> = 1.34, <em>SD</em> = 0.45; control: <em>M</em> = 1.27, <em>SD</em> = 0.37, <em>t</em>(52) = 0.6, <em>p</em> = .554), nor positive affect (pain: <em>M</em> = 3.05, <em>SD</em> = 0.82; control: <em>M</em> = 2.80, <em>SD</em> = 0.83, <em>t</em>(52) = 1.09, <em>p</em> = .283). The pain group perceived their tasks to be slightly more threatening (<em>M</em> = 1.36, <em>SD</em> = 0.58) than the control group (<em>M</em> = 1.11, <em>SD</em> = 0.30), <em>t</em>(52) = 1.97, <em>p</em> = .054, but not more challenging (pain: <em>M</em> = 2.67, <em>SD</em> = 0.87; control: <em>M</em> = 2.38, <em>SD</em> = 0.91, <em>t</em>(52) = 1.22, <em>p</em> = .227).</p>
+<p>Results on.</p>
+<p><strong>Figure 1.</strong> Results from Experiment 1 showing the mean level of social bonding reported for each group.</p>
 </div>
 </div>
 <div id="acknowledgements" class="section level1">

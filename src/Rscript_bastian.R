@@ -149,10 +149,42 @@ t.test(pain$pos_affect, control$pos_affect,
 ### Independent t-Test of Challenge ###
 
 # Outliers?
+bastian_clean %>% 
+  select(condition, threat_mean, challenge_mean) %>%
+  gather(task, rating, -condition) %>%
+  ggplot(aes(x = condition, y = rating)) +
+  geom_boxplot() +
+  facet_wrap(~ task)
 
 # Normality?
 
+# Normality check for challenge_mean
+with(bastian_clean, shapiro.test(challenge_mean[condition == "Control"]))
+with(bastian_clean, shapiro.test(challenge_mean[condition == "Pain"]))
+
+# Normality check for threat_mean
+with(bastian_clean, shapiro.test(threat_mean[condition == "Control"]))
+with(bastian_clean, shapiro.test(threat_mean[condition == "Pain"]))
+
+# Visualize normality
+bastian_clean %>% 
+  select(condition, threat_mean, challenge_mean) %>%
+  gather(task, rating, -condition) %>%
+  ggplot(aes(x = rating)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(~ task + condition)
+
 # Homoscedasticity?
+leveneTest(challenge_mean ~ condition, data = bastian_clean)
+leveneTest(threat_mean ~ condition, data = bastian_clean)
+
+# Independent t.test challenge_mean
+t.test(pain$challenge_mean, control$challenge_mean,
+       paired = FALSE, var.equal = TRUE)
+
+# Independent t.test threat_mean
+t.test(pain$threat_mean, control$threat_mean,
+       paired = FALSE, var.equal = TRUE)
 
 ### One-way ANOVA ###
 
