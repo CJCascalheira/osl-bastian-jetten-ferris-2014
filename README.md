@@ -171,7 +171,7 @@ Save the information as variables to use for graphing later.
   select(mean, sd, se))
 ```
 
-### Independent t-Test of Pain {.tabset .tabset-pills}
+### Independent t-Test of Pain 
 
 ```r
 # Independent t-test pain
@@ -265,7 +265,7 @@ So, why do we run the independent t-test anyways? Well, the [independent t-test 
 
 Here, the sample sizes are equal and just shy of the recommended threshold of *n* = 30. This is why we set `var.equal = TRUE` in the call to `t.test()`. Equal sample sizes of `r nrow(control)` make these violations negligible.
 
-### Independent t-Test of Affect {.tabset .tabset-pills}
+### Independent t-Test of Affect 
 ```r
 # Independent t-test neg_affect
 t.test(pain$neg_affect, control$neg_affect, 
@@ -329,7 +329,7 @@ leveneTest(pos_affect ~ condition, data = bastian_clean)
 
 Levene's test revealed that the variances for both groups were homogenous on measures of negative (*p* = .659) and positive (*p* = .789) affect.
 
-### Independent t-Test of Challenge {.tabset .tabset-pills}
+### Independent t-Test of Challenge
 ```r
 # Independent t.test challenge_mean
 t.test(pain$challenge_mean, control$challenge_mean,
@@ -391,7 +391,7 @@ leveneTest(threat_mean ~ condition, data = bastian_clean)
 
 Data for each measure are homoscedastic (both *p*s > 0.05).
 
-### One-way ANOVA {.tabset .tabset-pills}
+### One-way ANOVA 
 ```r
 # Model the variance
 bastian_aov <- aov(bonding_mean ~ condition, data = bastian_clean)
