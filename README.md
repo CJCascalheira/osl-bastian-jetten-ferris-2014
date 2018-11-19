@@ -29,7 +29,7 @@ Our task is to perform four analyses.
 ___
 Let's load the packages necessary for this analysis into our workspace.
 
-```{r}
+```r
 library(tidyverse)
 library(psych)
 library(car)
@@ -37,7 +37,7 @@ library(car)
 
 We can import the data set using a relative path because our working directory is set.
 
-```{r}
+```r
 bastian <- read_csv("../data/Bastian Jetten and Ferris 2014 Experiment 1.csv")
 ```
 
@@ -52,14 +52,14 @@ Let's find the variables of interest. After reading the [paper and activity inst
 * threatening and challenging; and
 * group bonding.
 
-```{r}
+```r
 # Find variables of interest
 names(bastian)
 ```
 
 We learned from the article that PANAS is a measure of affect. Let's clean up these data by assigning new variable names. I like to follow `this_convention` when naming objects in R. This prevents me from constantly referring to the `names()` of the data frame to check punctuation, capitalization, etc.
 
-```{r}
+```r
 # Select & rename variables of interest
 bastian_clean <- bastian %>%
   select(
@@ -74,7 +74,7 @@ bastian_clean <- bastian %>%
 
 A one-way ANOVA is performed on a factor with two or more levels. Right now, the `condition` column is an `integer`.
 
-```{r}
+```r
 # Change condition to factor with two levels
 bastian_clean$condition <- factor(bastian_clean$condition,
                                   labels = c("Control", "Pain"))
@@ -84,7 +84,7 @@ class(bastian_clean$condition)
 
 We will need to compute the group bonding variable. Let's do that ahead of time.
 
-```{r}
+```r
 # Create bonding variable
 bonding_mean <- bastian_clean %>%
   select(group101:group107) %>%
@@ -97,7 +97,7 @@ head(bastian_clean$bonding_mean)
 
 Independent, unpaired samples t-tests are simpler to execute in R if we separate the groups into variables.
 
-```{r}
+```r
 # Separate the conditions for t-tests
 control <- bastian_clean %>%
   filter(condition == "Control")
@@ -155,7 +155,7 @@ Let's summarize the data with pipes and a call to `psych::describe`.
 
 Save the information as variables to use for graphing later.
 
-```{r}
+```r
 # Descriptive statistics for control group
 (control_desc <- control %>%
   select(-starts_with("group"), -condition) %>%
@@ -163,7 +163,7 @@ Save the information as variables to use for graphing later.
   select(mean, sd, se))
 ```
 
-```{r}
+```r
 # Descriptive statistics for pain group
 (pain_desc <- pain %>%
   select(-starts_with("group"), -condition) %>%
@@ -173,7 +173,7 @@ Save the information as variables to use for graphing later.
 
 ### Independent t-Test of Pain {.tabset .tabset-pills}
 
-```{r}
+```r
 # Independent t-test pain
 t.test(pain$task_intensity, control$task_intensity,
        paired = FALSE, var.equal = TRUE)
@@ -181,7 +181,7 @@ t.test(pain$task_intensity, control$task_intensity,
 
 Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001.
 
-```{r}
+```r
 # Independent t-test unpleasantness
 t.test(pain$task_unpleasantness, control$task_unpleasantness,
        paired = FALSE, var.equal = TRUE)
@@ -193,7 +193,7 @@ Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were 
 
 #### Significant outliers?
 Outliers skew distributions.
-```{r}
+```r
 bastian_clean %>% 
   select(condition, task_intensity, task_unpleasantness) %>%
   gather(task, pain, -condition) %>%
@@ -208,26 +208,26 @@ Yes, there are outliers in the control group. Normality may be affected.
 The Shapiro-Wilk test enables us to examine if the data are normally distrbuted.
 
 **Normality Check for Task Intensity**
-```{r}
+```r
 with(bastian_clean, shapiro.test(task_intensity[condition == "Control"]))
 ```
 
 Since *p* < .001, we reject the null hypothesis that the distribution of task intensity is normal for the control group.
 
-```{r}
+```r
 with(bastian_clean, shapiro.test(task_intensity[condition == "Pain"]))
 ```
 
 The observations of the variable task intensity are normally distrbuted for the pain group (*p* = .321).
 
 **Normality Check for Task Unpleasantness**
-```{r}
+```r
 with(bastian_clean, shapiro.test(task_unpleasantness[condition == "Control"]))
 ```
 
 Once again, *p* < .001, so we accept the alternative hypothesis; this distribution is not normal.
 
-```{r}
+```r
 with(bastian_clean, shapiro.test(task_unpleasantness[condition == "Pain"]))
 ```
 
@@ -236,7 +236,7 @@ However, for the pain group, the distrbution of task unpleasantness *is* normal 
 We can visualize normality with histograms.
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 bastian_clean %>% 
   select(condition, task_intensity, task_unpleasantness) %>%
   gather(task, pain, -condition) %>%
@@ -249,13 +249,13 @@ Participants in the control group (i.e., those *not* subjected to ice water and 
 
 #### Homoscedasticity?
 Are the variances homogenous?
-```{r}
+```r
 leveneTest(task_intensity ~ condition, data = bastian_clean)
 ```
 
 Since *p* < .05, we reject the null hypothesis. The variances of intensity scores between the two groups are heteroscedastic.
 
-```{r}
+```r
 leveneTest(task_unpleasantness ~ condition, data = bastian_clean)
 ```
 
@@ -266,7 +266,7 @@ So, why do we run the independent t-test anyways? Well, the [independent t-test 
 Here, the sample sizes are equal and just shy of the recommended threshold of *n* = 30. This is why we set `var.equal = TRUE` in the call to `t.test()`. Equal sample sizes of `r nrow(control)` make these violations negligible.
 
 ### Independent t-Test of Affect {.tabset .tabset-pills}
-```{r}
+```r
 # Independent t-test neg_affect
 t.test(pain$neg_affect, control$neg_affect, 
        paired = FALSE, var.equal = TRUE)
@@ -280,7 +280,7 @@ Groups neither differed between negative affect (pain: *M* = 1.34, *SD* = 0.45; 
 #### Significant outliers?
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 bastian_clean %>% 
   select(condition, pos_affect, neg_affect) %>%
   gather(valence, rating, -condition) %>%
@@ -294,14 +294,14 @@ Some outliers in both groups for negative affect.
 #### Normality?
 
 **Normality Check for Negative Affect**
-```{r}
+```r
 with(bastian_clean, shapiro.test(neg_affect[condition == "Control"]))
 with(bastian_clean, shapiro.test(neg_affect[condition == "Pain"]))
 ```
 
 The scores of negative affect violate the assumption of normality (*p*s < .001).
 **Normality Check for Positive Affect**
-```{r}
+```r
 with(bastian_clean, shapiro.test(pos_affect[condition == "Control"]))
 with(bastian_clean, shapiro.test(pos_affect[condition == "Pain"]))
 ```
@@ -309,7 +309,7 @@ with(bastian_clean, shapiro.test(pos_affect[condition == "Pain"]))
 However, for both the control (*p* = .774) and pain (*p* = .288) groups, reported values of positive affect are normally distributed.
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 # Visualize normality
 bastian_clean %>% 
   select(condition, pos_affect, neg_affect) %>%
@@ -322,7 +322,7 @@ bastian_clean %>%
 Between-group distributions for affect look similar.
 
 #### Homoscedasticity?
-```{r}
+```r
 leveneTest(neg_affect ~ condition, data = bastian_clean)
 leveneTest(pos_affect ~ condition, data = bastian_clean)
 ```
@@ -330,7 +330,7 @@ leveneTest(pos_affect ~ condition, data = bastian_clean)
 Levene's test revealed that the variances for both groups were homogenous on measures of negative (*p* = .659) and positive (*p* = .789) affect.
 
 ### Independent t-Test of Challenge {.tabset .tabset-pills}
-```{r}
+```r
 # Independent t.test challenge_mean
 t.test(pain$challenge_mean, control$challenge_mean,
        paired = FALSE, var.equal = TRUE)
@@ -344,7 +344,7 @@ The pain group perceived their tasks to be slightly more threatening (*M* = 1.36
 #### Significant outliers?
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 bastian_clean %>% 
   select(condition, threat_mean, challenge_mean) %>%
   gather(task, rating, -condition) %>%
@@ -358,7 +358,7 @@ Outliers are present in both measures.
 #### Normality?
 
 **Normality Check for Challenge**
-```{r}
+```r
 with(bastian_clean, shapiro.test(challenge_mean[condition == "Control"]))
 with(bastian_clean, shapiro.test(challenge_mean[condition == "Pain"]))
 ```
@@ -366,7 +366,7 @@ with(bastian_clean, shapiro.test(challenge_mean[condition == "Pain"]))
 The distributions of perceived challenge for both conditions are normal.
 
 **Normality Check for Threat**
-```{r}
+```r
 with(bastian_clean, shapiro.test(threat_mean[condition == "Control"]))
 with(bastian_clean, shapiro.test(threat_mean[condition == "Pain"]))
 ```
@@ -374,7 +374,7 @@ with(bastian_clean, shapiro.test(threat_mean[condition == "Pain"]))
 The distribution of perceived threat is neither normal for the control group, nor pain group.
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 bastian_clean %>% 
   select(condition, threat_mean, challenge_mean) %>%
   gather(task, rating, -condition) %>%
@@ -384,7 +384,7 @@ bastian_clean %>%
 ```
 
 #### Homoscedasticity?
-```{r}
+```r
 leveneTest(challenge_mean ~ condition, data = bastian_clean)
 leveneTest(threat_mean ~ condition, data = bastian_clean)
 ```
@@ -392,7 +392,7 @@ leveneTest(threat_mean ~ condition, data = bastian_clean)
 Data for each measure are homoscedastic (both *p*s > 0.05).
 
 ### One-way ANOVA {.tabset .tabset-pills}
-```{r}
+```r
 # Model the variance
 bastian_aov <- aov(bonding_mean ~ condition, data = bastian_clean)
 # Summarize the ANOVA
@@ -405,7 +405,7 @@ Enduring pain with others has a mild effect on social bonding. Participants who 
 #### Significant outliers?
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 ggplot(bastian_clean, aes(x = condition, y = bonding_mean)) +
   geom_boxplot()
 ```
@@ -413,7 +413,7 @@ ggplot(bastian_clean, aes(x = condition, y = bonding_mean)) +
 It appears only two participants felt relatively disconnected after sharing pain with strangers.
 
 #### Normality?
-```{r}
+```r
 with(bastian_clean, shapiro.test(bonding_mean[condition == "Control"]))
 with(bastian_clean, shapiro.test(bonding_mean[condition == "Pain"]))
 ```
@@ -421,7 +421,7 @@ with(bastian_clean, shapiro.test(bonding_mean[condition == "Pain"]))
 Data from the control condition (*p* = .304) are normally distributed, but are non-normal for the pain group (*p* = .002).
 
 It is possible, and advisable, to check for normality among the residuals of an `aov` object.
-```{r}
+```r
 bastian_residuals <- residuals(object = bastian_aov)
 shapiro.test(bastian_residuals)
 ```
@@ -429,7 +429,7 @@ shapiro.test(bastian_residuals)
 The residuals are not normally distributed. However, like the independent t-test, a one-way ANOVA is *robust*. One condition is normal, while the other is not. The violation of normality is moderate.
 
 **Note**: graphs not shown here, check the R markdown document.
-```{r}
+```r
 ggplot(bastian_clean, aes(x = bonding_mean)) +
   geom_histogram(bins = 10) +
   facet_wrap(~ condition)
@@ -438,7 +438,7 @@ ggplot(bastian_clean, aes(x = bonding_mean)) +
 Most participants in the pain group rated their sense of bonding above 3.
 
 #### Homoscedasticity?
-```{r}
+```r
 leveneTest(bonding_mean ~ condition, data = bastian_clean)
 ```
 
@@ -449,7 +449,7 @@ Now we can create a bar graph depicting the degree of error.
 
 First, construct a `ggplot2` theme consistent with APA-style.
 
-```{r}
+```r
 apa_theme <- theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -463,7 +463,7 @@ Remember those R objects holding our descriptive statistics?
 
 Only the summary statistics for `bonding_mean` are necessary. After selecting those, we will assign the condition as a new variable.
 
-```{r}
+```r
 control_dynamite <- control_desc %>%
   mutate(measure = row.names(control_desc)) %>%
   select(measure, mean, se) %>%
@@ -478,14 +478,14 @@ pain_dynamite <- pain_desc %>%
 
 Finally, we will merge the data frames. The creation of a single data frame with the mean and standard error for both conditions makes plotting simple.
 
-```{r}
+```r
 (dynamite_plot <- merge(pain_dynamite, control_dynamite,
                        by = c("measure", "condition", "mean", "se"), all = TRUE))
 ```
 
 This code creates the bar graph.
 
-```{r}
+```r
 ggplot(dynamite_plot, aes(x = condition, y = mean, fill = condition)) +
   geom_bar(position = "dodge", stat = "identity", color = "black", size = 0.5) +
   geom_errorbar(aes(ymin = mean-se, ymax = mean+se),
