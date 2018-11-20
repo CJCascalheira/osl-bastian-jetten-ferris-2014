@@ -2,7 +2,7 @@
 A solution to Kevin P. McIntyre's Open Stats Lab activity on [one-way ANOVA](https://sites.trinity.edu/osl/data-sets-and-activities/one-way-anova-activities) using a data set from Bastian, Jetten, and Ferris (2014). Written in R.
 
 # Open Stats Lab
-___
+
 Kevin P. McIntyre developed this amazing resource for students of psychology. Check out [Open Stats Lab](https://sites.trinity.edu/osl/) for a collection of all activities.
 
 Each activity includes an article from *Psychological Science*, a data set, and an activity to complete in SPSS. However, if you are an open source fanatic, you could also complete the activity in [JASP](https://jasp-stats.org/). For tips on how to use JASP, check out [this resource](https://osf.io/t56kg/) created by Buchanan, Hopke, and Donaldson (2018).
@@ -10,7 +10,7 @@ Each activity includes an article from *Psychological Science*, a data set, and 
 I prefer to get my hands deep into the data. Dr. McIntyre does not *yet* offer an R activity to accompany the work of [Bastian, Jetten, and Ferris (2014)](https://journals.sagepub.com/stoken/default+domain/yFi5kZDGWMGBNQY62zIE/full), so here is one possible solution written in R.
 
 # Analysis 
-___
+
 I will perform assumption checks for each test prior to running it. We already know that the data meet all assumptions, otherwise the authors would have used a different analytic approach. However, checking the assumptions is helpful because:
 
 1. reproducibility and accuracy can be verified; and
@@ -26,7 +26,7 @@ Our task is to perform four analyses.
 4. **One-way ANOVA** - does pain lead to differences in group bonding?
 
 ## Import
-___
+
 Let's load the packages necessary for this analysis into our workspace.
 
 ```r
@@ -42,7 +42,7 @@ bastian <- read_csv("../data/Bastian Jetten and Ferris 2014 Experiment 1.csv")
 ```
 
 ## Clean
-___
+
 
 Let's find the variables of interest. After reading the [paper and activity instructions](https://sites.trinity.edu/osl/data-sets-and-activities/one-way-anova-activities), we know that we are looking for the following variables:
 
@@ -108,7 +108,7 @@ pain <- bastian_clean %>%
 Data are ready for analysis!
 
 ## Understand
-___
+
 An [unpaired samples t-test](https://libguides.library.kent.edu/SPSS/IndependentTTest) shares assumptions with a [univariate ANOVA](https://libguides.library.kent.edu/SPSS/OneWayANOVA). Three of these assumptions derive from experimental design, while the remaining three can be tested after data collection. 
 
 Remember, all samples in psychology should be randomly selected from the population. 
@@ -505,13 +505,13 @@ ggplot(dynamite_plot, aes(x = condition, y = mean, fill = condition)) +
 **Figure 1.** Results from Experiment 1 showing the mean level of social bonding reported for each group.
 
 ## Communicate
-___
+
 Participants in the pain group (*M* = 6.07, *SD* = 2.00) rated the intensity of their pain higher than those in the control group (*M* = 1.67, *SD* = 0.92), *t*(52) = 10.41, *p* < .001. Those subjected to the ice water task and squats (*M* = 6.00, *SD* = 1.96) were more likely than their counterparts (*M* = 1.74, *SD* = 1.20) to report an unpleasant experience, *t*(52) = 9.63, *p* < .001. Groups neither differed between negative affect (pain: *M* = 1.34, *SD* = 0.45; control: *M* = 1.27, *SD* = 0.37, *t*(52) = 0.6, *p* = .554), nor positive affect (pain: *M* = 3.05, *SD* = 0.82; control: *M* = 2.80, *SD* = 0.83, *t*(52) = 1.09, *p* = .283). The pain group perceived their tasks to be slightly more threatening (*M* = 1.36, *SD* = 0.58) than the control group (*M* = 1.11, *SD* = 0.30), *t*(52) = 1.97, *p* = .054, but not more challenging (pain: *M* = 2.67, *SD* = 0.87; control: *M* = 2.38, *SD* = 0.91, *t*(52) = 1.22, *p* = .227).
 
 Enduring pain with others has a mild effect on social bonding. Participants who perform the pain tasks with others reported a greater sense of being connected (*M* = 3.71, *SD* = 1.01) than those who perform non-painful tasks (*M* = 3.14, *SD* = 1.09), *F*(1, 52) = 4.09, *p* = .048.
 
 # Acknowledgements
-___
+
 I am thankful for my advisor, Dr. Brandt A. Smith for introducing me to R, JASP, and OSL. The discipline of psychology is advocating for preregistered, open materials. His encouragement to utilize open data and open source software has positioned me in the middle of the reproducible movement.
 
 I would still be clicking checkboxes and dropdowns to analyze data if it were not for [DataCamp](https://www.datacamp.com), [Rose Maier](https://rstudio-pubs-static.s3.amazonaws.com/65059_586f394d8eb84f84b1baaf56ffb6b47f.html), and [Alboukadel Kassambara](http://www.sthda.com/english/wiki/r-software).
