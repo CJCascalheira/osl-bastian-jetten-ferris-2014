@@ -140,14 +140,6 @@ All of the experimental design assumptions have been met.
     - Primarily tested with Levene's test.
     - Occasionally tested with Bartlett's test, which is more sensitive to violations of normality.
 
-Remember, the hypotheses of an independent t-test are:
-
-$$ H_0: \mu_1 = \mu_2 \\ H_1: \mu_1 \neq \mu_2 $$
-
-The hypotheses of a one-way ANOVA are:
-
-$$ H_0: \mu_1 = \mu_2 = \mu_3 = \dotso = \mu_k \\ H_1: \text{at least one different} $$
-
 **Note**: Even if you perform the test in question first (as I do below), make sure to check the assumptions.
 
 ### Descriptive Statistics
